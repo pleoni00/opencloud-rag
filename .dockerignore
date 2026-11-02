@@ -1,0 +1,5 @@
+*
+!Dockerfile
+!requirements.embedding.txt
+!external/
+!external/*.py

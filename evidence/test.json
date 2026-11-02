@@ -1,0 +1,33 @@
+{
+  "run": "c3013c",
+  "passed": [
+    "1/5 Tre documenti caricati via OpenCloud e conservati in MinIO",
+    "2/5 Eventi nativi push -> chunk con embedding reali in OpenSearch",
+    "3/5 ACL e gruppi: accessi coerenti, revoca e ripristino senza ricalcolare embedding",
+    "4/5 Nuova versione: aggiornamento automatico e sostituzione dei chunk precedenti",
+    "5/5 Ripristino nativo della versione precedente e riallineamento automatico dei chunk"
+  ],
+  "documents": [
+    {
+      "id": "0c66a670-5052-4324-b5b3-85f3d664d9ad$57479b76-1f17-4c8d-9709-0bff0576964b!8b23c8da-aea7-486d-91bb-ad5e029eb251",
+      "name": "rag-c3013c-1.txt"
+    },
+    {
+      "id": "0c66a670-5052-4324-b5b3-85f3d664d9ad$57479b76-1f17-4c8d-9709-0bff0576964b!2d2d4fa3-b41a-43eb-b603-3d559f67a032",
+      "name": "rag-c3013c-2.txt"
+    },
+    {
+      "id": "0c66a670-5052-4324-b5b3-85f3d664d9ad$57479b76-1f17-4c8d-9709-0bff0576964b!ed2e1a69-34b0-4d54-9afd-97dca903a88c",
+      "name": "rag-c3013c-3.txt"
+    }
+  ],
+  "event_types": [
+    "events.FileUploaded",
+    "events.FileVersionRestored",
+    "events.GroupMemberAdded",
+    "events.GroupMemberRemoved",
+    "events.ShareCreated",
+    "events.ShareRemoved",
+    "events.ShareUpdated"
+  ]
+}

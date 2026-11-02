@@ -1,0 +1,31 @@
+{
+  "repository": "qdrant/paraphrase-multilingual-MiniLM-L12-v2-onnx-Q",
+  "commit": "faf4aa4225822f3bc6376869cb1164e8e3feedd0",
+  "artifacts": [
+    {
+      "name": "config.json",
+      "size": 673,
+      "sha256": "c8ec081fdad2df991bf5abbf18418fec7a5cdaa421f60ffb060a30040b8c376f"
+    },
+    {
+      "name": "model_optimized.onnx",
+      "size": 235052644,
+      "sha256": "634d0f66c29dc934c8fa72b8a4fe91dd4d420a22f1d82a241058d4316e659a99"
+    },
+    {
+      "name": "special_tokens_map.json",
+      "size": 964,
+      "sha256": "8c785abebea9ae3257b61681b4e6fd8365ceafde980c21970d001e834cf10835"
+    },
+    {
+      "name": "tokenizer.json",
+      "size": 17083009,
+      "sha256": "fa685fc160bbdbab64058d4fc91b60e62d207e8dc60b9af5c002c5ab946ded00"
+    },
+    {
+      "name": "tokenizer_config.json",
+      "size": 1416,
+      "sha256": "0666eebf692422757e1dddf3c9fb1ded73ba3dc726c5828671fc89e45bf3609f"
+    }
+  ]
+}

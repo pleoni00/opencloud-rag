@@ -1,0 +1,88 @@
+name: opencloud-poc
+services:
+  opencloud:
+    image: opencloudeu/opencloud-rolling@sha256:bd57f039d0dd3df510fb25f178beefdf0b1f049097285feead607824460e6506
+    user: '0:0'
+    entrypoint: [/bin/sh, -c]
+    command: ['test -f /etc/opencloud/opencloud.yaml || opencloud init; exec opencloud server']
+    environment:
+      OC_URL: https://localhost:9200
+      OC_INSECURE: 'true'
+      PROXY_HTTP_ADDR: 0.0.0.0:9200
+      PROXY_ENABLE_BASIC_AUTH: 'true'
+      IDM_ADMIN_PASSWORD: ${OC_ADMIN_PASSWORD}
+      IDM_CREATE_DEMO_USERS: 'false'
+      OC_LOG_LEVEL: warn
+      NATS_NATS_HOST: 0.0.0.0
+      STORAGE_USERS_DRIVER: decomposeds3
+      STORAGE_USERS_DECOMPOSEDS3_ENDPOINT: http://minio:9000
+      STORAGE_USERS_DECOMPOSEDS3_REGION: us-east-1
+      STORAGE_USERS_DECOMPOSEDS3_ACCESS_KEY: ${MINIO_ROOT_USER}
+      STORAGE_USERS_DECOMPOSEDS3_SECRET_KEY: ${MINIO_ROOT_PASSWORD}
+      STORAGE_USERS_DECOMPOSEDS3_BUCKET: opencloud-documents
+    volumes:
+      - opencloud-config:/etc/opencloud
+      - opencloud-data:/var/lib/opencloud
+    ports: ['127.0.0.1:9200:9200']
+    depends_on:
+      minio-init: {condition: service_completed_successfully}
+    mem_limit: 1600m
+
+  minio:
+    image: cgr.dev/chainguard/minio@sha256:f767919bd003062ac69713cdce920eb922c9fa3388efe96264e78b763342ca1a
+    user: '0:0'
+    command: [server, /data, --console-address, ':9001']
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes: [minio-data:/data]
+    mem_limit: 384m
+
+  minio-init:
+    image: opencloud-events:local
+    build: .
+    env_file: .env
+    entrypoint: [python, /app/init_storage.py]
+    depends_on: [minio]
+
+  opensearch:
+    image: opensearchproject/opensearch:2.19.4
+    environment:
+      discovery.type: single-node
+      DISABLE_INSTALL_DEMO_CONFIG: 'true'
+      DISABLE_SECURITY_PLUGIN: 'true'
+      OPENSEARCH_JAVA_OPTS: '-Xms384m -Xmx384m'
+    ulimits:
+      nofile: {soft: 65536, hard: 65536}
+    volumes: [opensearch-data:/usr/share/opensearch/data]
+    healthcheck:
+      test: [CMD-SHELL, 'curl -fsS http://localhost:9200/_cluster/health >/dev/null']
+      interval: 5s
+      retries: 60
+    mem_limit: 1100m
+
+  events:
+    image: opencloud-events:local
+    build:
+      context: .
+      network: host
+    env_file: .env
+    environment:
+      OC_URL: https://opencloud:9200
+      NATS_URL: nats://opencloud:9233
+      OPENSEARCH_URL: http://opensearch:9200
+      PYTHONUNBUFFERED: '1'
+      HF_HUB_DISABLE_TELEMETRY: '1'
+      TOKENIZERS_PARALLELISM: 'false'
+    volumes:
+      - ./.private/model:/models/manual:ro
+      - ./.private/events:/state
+    depends_on:
+      opencloud: {condition: service_started}
+      opensearch: {condition: service_healthy}
+    mem_limit: 1100m
+volumes:
+  opencloud-config:
+  opencloud-data:
+  minio-data:
+  opensearch-data:
